@@ -1,4 +1,6 @@
 using FlyingDutchmanAirlines.DatabaseLayer;
+using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,14 +13,17 @@ public class CustomerRepositoryTests
     private CustomerRepository _repository = default!;
 
     [TestInitialize]
-    public void TestInitialize()
+    public async Task TestInitialize()
     {
         DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
             new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
                 .UseInMemoryDatabase("FlyingDutchman")
                 .Options;
-
         _context = new FlyingDutchmanAirlinesContext(dbContextOptions);
+
+        Customer testCustomer = new Customer("Linus Torvalds");
+        _context.Customers.Add(testCustomer);
+        await _context.SaveChangesAsync();
 
         _repository = new CustomerRepository(_context);
         Assert.IsNotNull(_repository);
@@ -65,5 +70,28 @@ public class CustomerRepositoryTests
 
         bool result = await repository.CreateCustomer("Donald Knuth");
         Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public async Task GetCustomerByName_Success()
+    {
+        Customer customer = await _repository.GetCustomerByName("Linus Torvalds");
+        Assert.IsNotNull(customer);
+
+        Assert.AreEqual("Linus Torvalds", customer.Name);
+    }
+
+    [TestMethod]
+    [DataRow("")]
+    [DataRow(null)]
+    [DataRow("#")]
+    [DataRow("$")]
+    [DataRow("%")]
+    [DataRow("&")]
+    [DataRow("*")]
+    [ExpectedException(typeof(CustomerNotFoundException))]
+    public async Task GetCustomerByName_Failure_InvalidName(string name)
+    {
+        await _repository.GetCustomerByName(name);
     }
 }
