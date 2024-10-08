@@ -9,7 +9,7 @@ public sealed class Customer
 
     public Customer(string name)
     {
-        Booking = new HashSet<Booking>();
         Name = name;
+        Booking = new HashSet<Booking>();
     }
 }

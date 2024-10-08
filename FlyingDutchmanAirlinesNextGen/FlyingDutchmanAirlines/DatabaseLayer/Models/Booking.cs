@@ -1,5 +1,3 @@
-using System;
-
 namespace FlyingDutchmanAirlines.DatabaseLayer.Models;
 
 public class Booking
@@ -8,6 +6,6 @@ public class Booking
     public int FlightNumber { get; set; }
     public int? CustomerId { get; set; }
 
-    public Customer Customer { get; set; }
-    public Flight FlightNumberNavigation { get; set; }
+    public Customer? Customer { get; set; }
+    public Flight FlightNumberNavigation { get; set; } = default!;
 }

@@ -42,6 +42,8 @@ public class CustomerRepository
     {
         if (!IsCusomerNameValid(name))
         {
+            Console.WriteLine(
+                $"Could not find customer in GetCustomerByName! Name = {name}");
             throw new CustomerNotFoundException();
         }
 
