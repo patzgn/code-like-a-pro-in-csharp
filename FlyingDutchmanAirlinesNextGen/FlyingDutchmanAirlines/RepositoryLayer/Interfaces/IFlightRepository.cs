@@ -4,5 +4,5 @@ namespace FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
 
 public interface IFlightRepository
 {
-    Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAirportId, int destinationAirportId);
+    Task<Flight> GetFlightByFlightNumber(int flightNumber);
 }

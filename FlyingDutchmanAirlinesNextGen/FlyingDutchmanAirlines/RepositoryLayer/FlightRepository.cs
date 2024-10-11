@@ -15,16 +15,8 @@ public class FlightRepository : IFlightRepository
         _context = context;
     }
 
-    public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
+    public async Task<Flight> GetFlightByFlightNumber(int flightNumber)
     {
-        if (!originAirportId.IsPositive() || !destinationAirportId.IsPositive())
-        {
-            Console.WriteLine(
-                "Argument Exception in GetFlightByFlightNumber!"
-                + $" OriginAirportId = {originAirportId}, destinationAirportId = {destinationAirportId}");
-            throw new ArgumentException("Invalid arguments provided");
-        }
-
         if (!flightNumber.IsPositive())
         {
             Console.WriteLine(
