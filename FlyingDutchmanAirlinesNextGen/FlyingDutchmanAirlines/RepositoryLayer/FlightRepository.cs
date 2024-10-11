@@ -1,11 +1,12 @@
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
+using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
 
-public class FlightRepository
+public class FlightRepository : IFlightRepository
 {
     private readonly FlyingDutchmanAirlinesContext _context;
 

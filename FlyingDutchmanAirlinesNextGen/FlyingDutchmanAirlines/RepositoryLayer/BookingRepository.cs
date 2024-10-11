@@ -1,12 +1,11 @@
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
+using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
 
-public class BookingRepository
+public class BookingRepository : IBookingRepository
 {
     private readonly FlyingDutchmanAirlinesContext _context;
 
@@ -15,18 +14,7 @@ public class BookingRepository
         _context = context;
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public BookingRepository()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    {
-        if (Assembly.GetExecutingAssembly().FullName == Assembly.GetCallingAssembly().FullName)
-        {
-            throw new Exception("This constructor should only be used for testing");
-        }
-    }
-
-    public virtual async Task CreateBooking(int customerId, int flightNumber)
+    public async Task CreateBooking(int customerId, int flightNumber)
     {
         if (!customerId.IsPositive() || !flightNumber.IsPositive())
         {
