@@ -1,8 +1,8 @@
+using FlyingDutchmanAirlines_Tests.Stubs;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer;
-using FlyingDutchmanAirlines_Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer;
@@ -16,13 +16,12 @@ public class AirportRepositoryTests
     [TestInitialize]
     public async Task TestInitialize()
     {
-        DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
-            new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
-                .UseInMemoryDatabase("FlyingDutchman")
-                .Options;
+        var dbContextOptions = new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
+            .UseInMemoryDatabase("FlyingDutchman")
+            .Options;
         _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
-        SortedList<string, Airport> testAirports = new SortedList<string, Airport>
+        var testAirports = new SortedList<string, Airport>
         {
             {
                 "GOH",
@@ -76,10 +75,10 @@ public class AirportRepositoryTests
     [DataRow(3)]
     public async Task GetAirportById_Success(int airportId)
     {
-        Airport airport = await _repository.GetAirportById(airportId);
+        var airport = await _repository.GetAirportById(airportId);
         Assert.IsNotNull(airport);
 
-        Airport dbAirport = _context.Airports.First(a => a.AirportId == airportId);
+        var dbAirport = _context.Airports.First(a => a.AirportId == airportId);
         Assert.AreEqual(dbAirport.AirportId, airport.AirportId);
         Assert.AreEqual(dbAirport.City, airport.City);
         Assert.AreEqual(dbAirport.Iata, airport.Iata);
@@ -89,7 +88,7 @@ public class AirportRepositoryTests
     [ExpectedException(typeof(ArgumentException))]
     public async Task GetAirportById_Failure_InvalidInput()
     {
-        StringWriter outputStream = new StringWriter();
+        var outputStream = new StringWriter();
         try
         {
             Console.SetOut(outputStream);
@@ -103,7 +102,7 @@ public class AirportRepositoryTests
         }
         finally
         {
-            outputStream.Dispose();
+            await outputStream.DisposeAsync();
         }
     }
 

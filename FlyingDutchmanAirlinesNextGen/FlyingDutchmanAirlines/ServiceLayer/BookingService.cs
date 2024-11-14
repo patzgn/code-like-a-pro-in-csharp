@@ -1,25 +1,15 @@
 using System.Runtime.ExceptionServices;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
-using FlyingDutchmanAirlines.RepositoryLayer;
 using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
 
 namespace FlyingDutchmanAirlines.ServiceLayer;
 
-public class BookingService
+public class BookingService(
+    IBookingRepository bookingRepository,
+    ICustomerRepository customerRepository,
+    IFlightRepository flightRepository)
 {
-    private readonly IBookingRepository _bookingRepository;
-    private readonly ICustomerRepository _customerRepository;
-    private readonly IFlightRepository _flightRepository;
-
-    public BookingService(IBookingRepository bookingRepository, ICustomerRepository customerRepository,
-        IFlightRepository flightRepository)
-    {
-        _bookingRepository = bookingRepository;
-        _customerRepository = customerRepository;
-        _flightRepository = flightRepository;
-    }
-
     public async Task<(bool result, Exception? exception)> CreateBooking(string name, int flightNumber)
     {
         if (string.IsNullOrEmpty(name) || !flightNumber.IsPositive())
@@ -29,15 +19,14 @@ public class BookingService
 
         try
         {
-            Customer customer = await GetCustomerFromDatabase(name)
-                ?? await AddCustomerToDatabase(name);
+            var customer = await GetCustomerFromDatabase(name) ?? await AddCustomerToDatabase(name);
 
             if (!await FlightExistsInDatabase(flightNumber))
             {
                 return (false, new CouldNotAddBookingToDatabaseException());
             }
 
-            await _bookingRepository.CreateBooking(customer.CustomerId, flightNumber);
+            await bookingRepository.CreateBooking(customer.CustomerId, flightNumber);
             return (true, null);
         }
         catch (Exception ex)
@@ -50,7 +39,7 @@ public class BookingService
     {
         try
         {
-            return await _customerRepository.GetCustomerByName(name);
+            return await customerRepository.GetCustomerByName(name);
         }
         catch (CustomerNotFoundException)
         {
@@ -65,19 +54,21 @@ public class BookingService
 
     private async Task<Customer> AddCustomerToDatabase(string name)
     {
-        await _customerRepository.CreateCustomer(name);
-        return await _customerRepository.GetCustomerByName(name);
+        await customerRepository.CreateCustomer(name);
+        return await customerRepository.GetCustomerByName(name);
     }
 
     private async Task<bool> FlightExistsInDatabase(int flightNumber)
     {
         try
         {
-            return await _flightRepository.GetFlightByFlightNumber(flightNumber) != null;
+            await flightRepository.GetFlightByFlightNumber(flightNumber);
         }
         catch (FlightNotFoundException)
         {
             return false;
         }
+
+        return true;
     }
 }

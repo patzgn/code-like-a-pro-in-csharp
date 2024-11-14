@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 
 namespace FlyingDutchmanAirlines;
+
 class Program
 {
     static void Main(string[] args)

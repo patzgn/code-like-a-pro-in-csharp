@@ -1,8 +1,7 @@
+using FlyingDutchmanAirlines_Tests.Stubs;
 using FlyingDutchmanAirlines.DatabaseLayer;
-using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer;
-using FlyingDutchmanAirlines_Tests.Stubs;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer;
@@ -16,10 +15,9 @@ public class BookingRepositoryTests
     [TestInitialize]
     public void TestInitialize()
     {
-        DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
-            new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
-                .UseInMemoryDatabase("FlyingDutchman")
-                .Options;
+        var dbContextOptions = new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
+            .UseInMemoryDatabase("FlyingDutchman")
+            .Options;
         _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
         _repository = new BookingRepository(_context);
@@ -30,7 +28,7 @@ public class BookingRepositoryTests
     public async Task CreateBooking_Success()
     {
         await _repository.CreateBooking(1, 0);
-        Booking booking = _context.Bookings.First();
+        var booking = _context.Bookings.First();
 
         Assert.IsNotNull(booking);
         Assert.AreEqual(1, booking.CustomerId);

@@ -15,13 +15,12 @@ public class CustomerRepositoryTests
     [TestInitialize]
     public async Task TestInitialize()
     {
-        DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
-            new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
-                .UseInMemoryDatabase("FlyingDutchman")
-                .Options;
+        var dbContextOptions = new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
+            .UseInMemoryDatabase("FlyingDutchman")
+            .Options;
         _context = new FlyingDutchmanAirlinesContext(dbContextOptions);
 
-        Customer testCustomer = new Customer("Linus Torvalds");
+        var testCustomer = new Customer("Linus Torvalds");
         _context.Customers.Add(testCustomer);
         await _context.SaveChangesAsync();
 
@@ -32,21 +31,21 @@ public class CustomerRepositoryTests
     [TestMethod]
     public async Task CreateCustomer_Success()
     {
-        bool result = await _repository.CreateCustomer("Donald Knuth");
+        var result = await _repository.CreateCustomer("Donald Knuth");
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task CreateCustomer_Failure_NameIsNull()
     {
-        bool result = await _repository.CreateCustomer(null!);
+        var result = await _repository.CreateCustomer(null!);
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public async Task CreateCustomer_Failure_NameIsEmptyString()
     {
-        bool result = await _repository.CreateCustomer(string.Empty);
+        var result = await _repository.CreateCustomer(string.Empty);
         Assert.IsFalse(result);
     }
 
@@ -58,24 +57,24 @@ public class CustomerRepositoryTests
     [DataRow('*')]
     public async Task CreateCustomer_Failure_NameContainsInvalidCharacters(char invalidCharacter)
     {
-        bool result = await _repository.CreateCustomer("Donald Knuth" + invalidCharacter);
+        var result = await _repository.CreateCustomer("Donald Knuth" + invalidCharacter);
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public async Task CreateCustomer_Failure_DatabaseAccessError()
     {
-        CustomerRepository repository = new CustomerRepository(null!);
+        var repository = new CustomerRepository(null!);
         Assert.IsNotNull(repository);
 
-        bool result = await repository.CreateCustomer("Donald Knuth");
+        var result = await repository.CreateCustomer("Donald Knuth");
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public async Task GetCustomerByName_Success()
     {
-        Customer customer = await _repository.GetCustomerByName("Linus Torvalds");
+        var customer = await _repository.GetCustomerByName("Linus Torvalds");
         Assert.IsNotNull(customer);
 
         Assert.AreEqual("Linus Torvalds", customer.Name);

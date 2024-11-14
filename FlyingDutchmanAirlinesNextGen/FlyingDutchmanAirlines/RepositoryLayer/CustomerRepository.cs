@@ -6,29 +6,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
 
-public class CustomerRepository : ICustomerRepository
+public class CustomerRepository(FlyingDutchmanAirlinesContext context) : ICustomerRepository
 {
-    private readonly FlyingDutchmanAirlinesContext _context;
-
-    public CustomerRepository(FlyingDutchmanAirlinesContext context)
-    {
-        _context = context;
-    }
-
     public async Task<bool> CreateCustomer(string name)
     {
-        if (!IsCusomerNameValid(name))
+        if (!IsCustomerNameValid(name))
         {
             return false;
         }
 
         try
         {
-            Customer newCustomer = new Customer(name);
-            using (_context)
+            var newCustomer = new Customer(name);
+            await using (context)
             {
-                _context.Customers.Add(newCustomer);
-                await _context.SaveChangesAsync();
+                context.Customers.Add(newCustomer);
+                await context.SaveChangesAsync();
             }
         }
         catch
@@ -41,22 +34,20 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<Customer> GetCustomerByName(string name)
     {
-        if (!IsCusomerNameValid(name))
+        if (!IsCustomerNameValid(name))
         {
-            Console.WriteLine(
-                $"Could not find customer in GetCustomerByName! Name = {name}");
+            Console.WriteLine($"Could not find customer in GetCustomerByName! Name = {name}");
             throw new CustomerNotFoundException();
         }
 
-        return await _context.Customers.FirstOrDefaultAsync(c => c.Name == name)
-            ?? throw new CustomerNotFoundException();
+        return await context.Customers.FirstOrDefaultAsync(c => c.Name == name) ??
+               throw new CustomerNotFoundException();
     }
 
-    private bool IsCusomerNameValid(string name)
+    private bool IsCustomerNameValid(string name)
     {
         char[] forbiddenCharacters = ['!', '@', '#', '$', '%', '&', '*'];
 
-        return !string.IsNullOrEmpty(name)
-               && !name.Any(x => forbiddenCharacters.Contains(x));
+        return !string.IsNullOrEmpty(name) && !name.Any(x => forbiddenCharacters.Contains(x));
     }
 }

@@ -1,7 +1,6 @@
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FlyingDutchmanAirlines_Tests.Stubs;
 
@@ -13,12 +12,12 @@ public class FlyingDutchmanAirlinesContext_Stub : FlyingDutchmanAirlinesContext
         base.Database.EnsureDeleted();
     }
 
-    public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        IEnumerable<EntityEntry> pendingChanges = ChangeTracker.Entries()
+        var pendingChanges = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added);
 
-        IEnumerable<Booking> bookings = pendingChanges.Select(e => e.Entity).OfType<Booking>();
+        var bookings = pendingChanges.Select(e => e.Entity).OfType<Booking>();
         if (bookings.Any(b => b.CustomerId != 1))
         {
             throw new Exception("Database Error!");

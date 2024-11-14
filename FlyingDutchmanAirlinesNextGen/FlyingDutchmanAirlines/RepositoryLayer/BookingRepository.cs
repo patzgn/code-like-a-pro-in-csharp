@@ -5,15 +5,8 @@ using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
 
-public class BookingRepository : IBookingRepository
+public class BookingRepository(FlyingDutchmanAirlinesContext context) : IBookingRepository
 {
-    private readonly FlyingDutchmanAirlinesContext _context;
-
-    public BookingRepository(FlyingDutchmanAirlinesContext context)
-    {
-        _context = context;
-    }
-
     public async Task CreateBooking(int customerId, int flightNumber)
     {
         if (!customerId.IsPositive() || !flightNumber.IsPositive())
@@ -23,7 +16,7 @@ public class BookingRepository : IBookingRepository
             throw new ArgumentException("Invalid arguments provided");
         }
 
-        Booking newBooking = new Booking
+        var newBooking = new Booking
         {
             CustomerId = customerId,
             FlightNumber = flightNumber,
@@ -31,8 +24,8 @@ public class BookingRepository : IBookingRepository
 
         try
         {
-            _context.Bookings.Add(newBooking);
-            await _context.SaveChangesAsync();
+            context.Bookings.Add(newBooking);
+            await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {

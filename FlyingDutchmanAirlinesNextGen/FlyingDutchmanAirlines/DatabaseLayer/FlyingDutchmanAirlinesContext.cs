@@ -1,18 +1,11 @@
-using System;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.DatabaseLayer;
 
-public class FlyingDutchmanAirlinesContext : DbContext
+public class FlyingDutchmanAirlinesContext(DbContextOptions<FlyingDutchmanAirlinesContext> options)
+    : DbContext(options)
 {
-    public FlyingDutchmanAirlinesContext() { }
-
-    public FlyingDutchmanAirlinesContext(DbContextOptions<FlyingDutchmanAirlinesContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Airport> Airports { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Customer> Customers { get; set; }
@@ -20,11 +13,11 @@ public class FlyingDutchmanAirlinesContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            string connectionString = Environment.GetEnvironmentVariable("FlyingDutchmanAirlines_Database_Connection_String") ?? string.Empty;
-            optionsBuilder.UseSqlServer(connectionString);
-        }
+        if (optionsBuilder.IsConfigured) return;
+
+        var connectionString =
+            Environment.GetEnvironmentVariable("FlyingDutchmanAirlines_Database_Connection_String") ?? string.Empty;
+        optionsBuilder.UseSqlServer(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
