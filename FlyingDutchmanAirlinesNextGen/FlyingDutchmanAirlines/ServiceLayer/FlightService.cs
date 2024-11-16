@@ -1,11 +1,12 @@
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
+using FlyingDutchmanAirlines.ServiceLayer.Interfaces;
 using FlyingDutchmanAirlines.Views;
 
 namespace FlyingDutchmanAirlines.ServiceLayer;
 
-public class FlightService(IFlightRepository flightRepository, IAirportRepository airportRepository)
+public class FlightService(IFlightRepository flightRepository, IAirportRepository airportRepository) : IFlightService
 {
     public async IAsyncEnumerable<FlightView> GetFlights()
     {
