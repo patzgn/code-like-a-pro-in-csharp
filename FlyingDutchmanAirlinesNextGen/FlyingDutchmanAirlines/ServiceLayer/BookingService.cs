@@ -2,13 +2,14 @@ using System.Runtime.ExceptionServices;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer.Interfaces;
+using FlyingDutchmanAirlines.ServiceLayer.Interfaces;
 
 namespace FlyingDutchmanAirlines.ServiceLayer;
 
 public class BookingService(
     IBookingRepository bookingRepository,
     ICustomerRepository customerRepository,
-    IFlightRepository flightRepository)
+    IFlightRepository flightRepository) : IBookingService
 {
     public async Task<(bool result, Exception? exception)> CreateBooking(string name, int flightNumber)
     {
